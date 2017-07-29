@@ -9,9 +9,16 @@
   [project & args]
   (println "Hi!"))
 
+(defn pass
+  [transport msg m]
+  (println m)
+  (u/answer transport msg { :type :test-result
+                            :fact 123
+                            :result-detail { :result :pass }}))
+
 (defn fail
   [transport msg m]
-  (pr m)
+  (println m)
   (case (:type m)
     :actual-result-did-not-match-expected-value
       (u/answer transport msg { :type :test-result
@@ -32,6 +39,9 @@
   [h]
   (fn [{:keys [op transport ns-test] :as msg}]
     (if (= "test-midje" op)
-      (do (midje/load-facts ns-test)
-          (midje/check-facts :all))
+      (do (midje/load-facts ns-test))
       (h msg))))
+
+(midje/load-facts 'foo.core-test)
+(midje/forget-facts :all)
+(midje/check-facts :all)
