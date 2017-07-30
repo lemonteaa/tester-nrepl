@@ -13,12 +13,11 @@
 (def ^:dynamic cur-msg nil)
 
 (defn pass
-  [transport msg m]
+  [transport msg]
   (println "Enter: pass")
-  (println m)
-  (u/answer transport msg { :type :test-result
+  (comment (u/answer transport msg { :type :test-result
                             :fact 123
-                            :result-detail { :result :pass }}))
+                            :result-detail { :result :pass }})))
 
 (defn fail
   [transport msg m]
@@ -34,14 +33,24 @@
                                 })
     (throw (ex-info "Unknown failure type" { :input-arg m }))))
 
-(def emission-map (assoc default/emission-map
-                         :pass (partial pass cur-transport cur-msg)))
+(def pass-f (partial pass cur-transport cur-msg))
 
-(state/install-emission-map emission-map)
+(def emission-map (assoc default/emission-map
+                         :pass (ns-resolve *ns* (symbol "pass-f"))))
+
+(state/install-emission-map-wildly emission-map)
+
+state/installation-ok?
+
+state/emission-functions
+
+midje.config/*config*
 
 (midje.config/with-augmented-config { :emitter 'leiningen.tester-nrepl }
-  (let [a 'foo.core-test]
-      (midje/load-facts a)))
+                                      ;:print-level :print-facts }
+  (println (midje.config/running-in-repl?))
+  (println midje.config/*config*)
+  (midje/load-facts 'foo.core-test))
 
 (defn wrap-tester
   [h]
