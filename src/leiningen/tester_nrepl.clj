@@ -2,7 +2,9 @@
   (:require [leiningen.util :as u]
             [midje.repl :as midje]
             [midje.emission.plugins.default :as default]
-            [midje.emission.state :as state]))
+            [midje.emission.state :as state]
+            [midje.data.fact :as fact]
+            [midje.data.nested-facts :as nested-facts]))
 
 (defn tester-nrepl
   "I don't do a lot."
@@ -12,13 +14,17 @@
 (def ^:dynamic cur-transport nil)
 (def ^:dynamic cur-msg nil)
 
+(defn get-fact-hierarchy []
+  (map fact/guid nested-facts/*fact-context*))
+
 (defn pass
   [transport msg]
   (println "Enter: pass")
-  (println cur-transport)
-  (comment (u/answer cur-transport cur-msg { :type :test-result
-                            :fact 123
-                            :result-detail { :result :pass }})))
+  ;(println cur-transport)
+  (u/answer cur-transport cur-msg
+            { :type :test-result
+              :fact-context (get-fact-hierarchy)
+              :result-detail { :result :pass }}))
 
 (defn fail
   [transport msg m]
@@ -62,9 +68,9 @@ midje.config/*config*
         (println cur-transport cur-msg)
         (println (clojure.tools.nrepl.misc/response-for msg { :foo :bar }))
         (println ns-test)
-        (u/answer cur-transport cur-msg { :foo :bar :value 3 })
-        (u/answer cur-transport cur-msg { :value "done" }))
-        ;(midje/load-facts (symbol ns-test)))
+        ;(u/answer cur-transport cur-msg { :foo :bar :value 3 })
+        ;(u/answer cur-transport cur-msg { :value "done" }))
+        (midje/load-facts (symbol ns-test)))
       (h msg))))
 
 (let [a 'foo.core-test]
