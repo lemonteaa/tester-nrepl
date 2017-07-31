@@ -4,7 +4,8 @@
             [leiningen.tester-nrepl :refer [wrap-tester]]))
 
 (midje.config/change-defaults :print-level :print-facts)
-(midje.config/change-defaults :emitter 'leiningen.tester-nrepl)
+;(midje.config/change-defaults :emitter 'leiningen.tester-nrepl)
+(midje.config/change-defaults :emitter 'midje.emission.plugins.nrepl)
 
 (midje.config/running-in-repl?)
 

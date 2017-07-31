@@ -5,3 +5,7 @@
 (defn answer
   [transport msg response]
   (t/send transport (response-for msg response)))
+
+(defn str->fq-var
+  [s]
+  (ns-resolve *ns* (symbol s)))
