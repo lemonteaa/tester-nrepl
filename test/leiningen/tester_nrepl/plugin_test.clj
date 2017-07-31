@@ -15,8 +15,13 @@ midje.config/*config*
   (-> (repl/client conn 1000)
       ;(repl/message {:op :eval :code "(+ 1 1)"})
       (repl/message {:op "test-midje" :ns-test 'foo.core-test })
-      repl/response-values))
+      ;repl/response-values))
+      doall))
 
+
+(-> { :foo :bar }
+    seq
+    flatten)
 
 ;(into [#'wrap-tester] server/default-middlewares)
 ;(server/default-handler #'wrap-tester)

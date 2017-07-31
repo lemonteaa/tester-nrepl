@@ -4,8 +4,4 @@
 
 (defn answer
   [transport msg response]
-  (-> response
-      seq
-      flatten
-      (response-for msg)
-      (t/send transport)))
+  (t/send transport (response-for msg response)))

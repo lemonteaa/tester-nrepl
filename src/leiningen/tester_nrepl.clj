@@ -15,7 +15,8 @@
 (defn pass
   [transport msg]
   (println "Enter: pass")
-  (comment (u/answer transport msg { :type :test-result
+  (println cur-transport)
+  (comment (u/answer cur-transport cur-msg { :type :test-result
                             :fact 123
                             :result-detail { :result :pass }})))
 
@@ -59,8 +60,11 @@ midje.config/*config*
       (binding [cur-transport transport
                 cur-msg msg]
         (println cur-transport cur-msg)
+        (println (clojure.tools.nrepl.misc/response-for msg { :foo :bar }))
         (println ns-test)
-        (midje/load-facts (symbol ns-test)))
+        (u/answer cur-transport cur-msg { :foo :bar :value 3 })
+        (u/answer cur-transport cur-msg { :value "done" }))
+        ;(midje/load-facts (symbol ns-test)))
       (h msg))))
 
 (let [a 'foo.core-test]
