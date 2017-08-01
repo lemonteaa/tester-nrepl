@@ -8,8 +8,24 @@
 (def ^:dynamic *transport* nil)
 (def ^:dynamic *msg* nil)
 
+(defn starting-fact-stream []
+  (u/answer *transport* *msg*
+            { :type :start }))
+
+(defn finishing-fact-stream []
+  (u/answer *transport* *msg*
+            { :type :done }))
+
 (defn get-fact-hierarchy []
-  (map fact/guid nested-facts/*fact-context*))
+  nested-facts/*fact-context*)
+
+(defn starting-to-check-fact [f]
+  (u/answer *transport* *msg*
+            { :type :status-update :fact-context (get-fact-hierarchy) :status :checking }))
+
+(defn finishing-fact [f]
+  (u/answer *transport* *msg*
+            { :type :status-update :fact-context (get-fact-hierarchy) :status :done }))
 
 (defn pass
   []
@@ -42,7 +58,11 @@
 
 (def emission-map (merge default/emission-map
                          { :pass (u/str->fq-var "pass")
-                           :fail (u/str->fq-var "fail") }))
+                           :fail (u/str->fq-var "fail")
+                           :starting-fact-stream (u/str->fq-var "starting-fact-stream")
+                           :finishing-fact-stream (u/str->fq-var "finishing-fact-stream")
+                           :starting-to-check-fact (u/str->fq-var "starting-to-check-fact")
+                           :finishing-fact (u/str->fq-var "finishing-fact") }))
 
 (state/install-emission-map-wildly emission-map)
 
