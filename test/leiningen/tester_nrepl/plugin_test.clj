@@ -3,9 +3,9 @@
             [clojure.tools.nrepl.server :as server]
             [leiningen.tester-nrepl :refer [wrap-tester]]))
 
-(midje.config/change-defaults :print-level :print-facts)
+;(midje.config/change-defaults :print-level :print-facts)
 ;(midje.config/change-defaults :emitter 'leiningen.tester-nrepl)
-(midje.config/change-defaults :emitter 'midje.emission.plugins.nrepl)
+;(midje.config/change-defaults :emitter 'midje.emission.plugins.nrepl)
 
 (midje.config/running-in-repl?)
 
@@ -18,11 +18,6 @@ midje.config/*config*
       (repl/message {:op "test-midje" :ns-test 'foo.core-test })
       ;repl/response-values))
       doall))
-
-
-(-> { :foo :bar }
-    seq
-    flatten)
 
 ;(into [#'wrap-tester] server/default-middlewares)
 ;(server/default-handler #'wrap-tester)
