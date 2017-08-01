@@ -20,21 +20,25 @@
               :fact-context (get-fact-hierarchy)
               :result-detail { :result :pass }}))
 
+(def fail-reasons
+  #{ :actual-result-did-not-match-expected-value
+     :actual-result-should-not-have-matched-expected-value
+     :actual-result-did-not-match-checker
+     :actual-result-should-not-have-matched-checker
+     :some-prerequisites-were-called-the-wrong-number-of-times })
+
 (defn fail
   [m]
   (println "Enter: fail")
   (println m)
-  (case (:type m)
-    :actual-result-did-not-match-expected-value
-      (u/answer *transport* *msg*
-                { :type :test-result
-                  :fact 123
-                  :result-detail { :result :fail
-                                   :reason :actual-result-did-not-match-expected-value
-                                   :expected-result (:expected-result m)
-                                   :actual (:actual m) }
-                })
-    (throw (ex-info "Unknown failure type" { :input-arg m }))))
+  (u/answer *transport* *msg*
+            { :type :test-result
+              :fact 123
+              :result-detail (assoc (clojure.set/rename-keys m { :type :reason })
+                                     :result (if (contains? fail-reasons (:type m))
+                                                :fail
+                                                :error))
+            }))
 
 (def emission-map (merge default/emission-map
                          { :pass (u/str->fq-var "pass")
