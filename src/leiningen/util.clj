@@ -9,3 +9,9 @@
 (defn str->fq-var
   [s]
   (ns-resolve *ns* (symbol s)))
+
+(defn answer-lt
+  [transport msg response]
+  (t/send transport (response-for msg { :op (:op msg)
+                                        :encoding "edn"
+                                        :data (pr-str response) })))
