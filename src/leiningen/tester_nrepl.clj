@@ -11,7 +11,8 @@
 
 midje.config/*config*
 
-(midje.config/with-augmented-config { :emitter 'midje.emission.plugins.nrepl }
+(midje.config/with-augmented-config { :emitter 'midje.emission.plugins.nrepl
+                                      :print-level :print-facts }
   (defn wrap-tester
     [h]
     (fn [{:keys [op transport ns-test] :as msg}]
@@ -21,7 +22,10 @@ midje.config/*config*
           (println *transport* *msg*)
           (println (clojure.tools.nrepl.misc/response-for msg { :foo :bar }))
           (println ns-test)
-          (midje/load-facts (symbol ns-test)))
+          (Thread/sleep 1000)
+          (midje/load-facts (symbol ns-test))
+          (Thread/sleep 1000)
+          (println "done."))
         (h msg))))
 )
 

@@ -12,12 +12,13 @@
   (u/answer *transport* *msg*
             { :type :start }))
 
-(defn finishing-fact-stream []
+(defn finishing-fact-stream [a b]
+  (println "Finishing fact stream")
   (u/answer *transport* *msg*
             { :type :done }))
 
 (defn get-fact-hierarchy []
-  nested-facts/*fact-context*)
+  (map fact/guid nested-facts/*fact-context*))
 
 (defn starting-to-check-fact [f]
   (u/answer *transport* *msg*
@@ -25,7 +26,7 @@
 
 (defn finishing-fact [f]
   (u/answer *transport* *msg*
-            { :type :status-update :fact-context (get-fact-hierarchy) :status :done }))
+            { :type :status-update :fact-context (get-fact-hierarchy) :status :finished }))
 
 (defn pass
   []
