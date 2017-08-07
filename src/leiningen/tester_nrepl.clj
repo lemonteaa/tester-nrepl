@@ -1,6 +1,7 @@
 (ns leiningen.tester-nrepl
   (:require [midje.repl :as midje]
-            [midje.emission.plugins.nrepl :as plugin :refer [*transport* *msg* *rtn-fmt*]]))
+            [midje.emission.plugins.nrepl :as plugin :refer [*transport* *msg* *rtn-fmt*]]
+            [clojure.tools.nrepl.middleware :as mw]))
 
 (defn tester-nrepl
   "I don't do a lot."
@@ -32,3 +33,12 @@ midje.config/*config*
 
 ;(midje/forget-facts :all)
 ;(midje/check-facts :all)
+
+(mw/set-descriptor! #'wrap-tester
+                    {:requires #{}
+                     :expects #{}
+                     :handles {"test-midje"
+                               {:doc "Run Midje tests in specified namespace. Note that responses are streamed and their format can be configured at request-time."
+                                :requires {"ns-test" "The root namespace for tests (string)"}
+                                :optional {"rtn-fmt" "Control how responses are formatted. One of 'lighttable' or 'standard'. (string, default 'standard')"}
+                                }}})

@@ -13,9 +13,9 @@ midje.config/*config*
 
 (with-open [tserver (server/start-server :port 3456 :handler (server/default-handler #'wrap-tester))
             conn (repl/connect :port 3456)]
-  (-> (repl/client conn (* 1000 5))
+  (-> (repl/client conn (* 1000 2))
       ;(repl/message {:op :eval :code "(+ 1 1)"})
-      (repl/message {:op "test-midje" :ns-test 'foo.core-test :rtn-fmt "lighttable" })
+      (repl/message {:op "test-midje" :ns-test "foo.core-test" :rtn-fmt "lighttable" })
       ;repl/response-values))
       doall))
 
