@@ -7,35 +7,37 @@
 
 (def ^:dynamic *transport* nil)
 (def ^:dynamic *msg* nil)
+(def ^:dynamic *rtn-fmt* nil)
+
+(defn dispatch-ans [answer]
+  (case *rtn-fmt*
+    :lighttable (u/answer-lt *transport* *msg* answer)
+    :standard (u/answer *transport* *msg* answer)
+    (u/answer *transport* *msg* answer)))
 
 (defn starting-fact-stream []
-  (u/answer *transport* *msg*
-            { :type :start }))
+  (dispatch-ans { :type :start }))
 
 (defn finishing-fact-stream [a b]
   (println "Finishing fact stream")
-  (u/answer *transport* *msg*
-            { :type :done }))
+  (dispatch-ans { :type :done }))
 
 (defn get-fact-hierarchy []
   (map fact/guid nested-facts/*fact-context*))
 
 (defn starting-to-check-fact [f]
-  (u/answer *transport* *msg*
-            { :type :status-update :fact-context (get-fact-hierarchy) :status :checking }))
+  (dispatch-ans { :type :status-update :fact-context (get-fact-hierarchy) :status :checking }))
 
 (defn finishing-fact [f]
-  (u/answer *transport* *msg*
-            { :type :status-update :fact-context (get-fact-hierarchy) :status :finished }))
+  (dispatch-ans { :type :status-update :fact-context (get-fact-hierarchy) :status :finished }))
 
 (defn pass
   []
   (println "Enter: pass")
   ;(println cur-transport)
-  (u/answer *transport* *msg*
-            { :type :test-result
-              :fact-context (get-fact-hierarchy)
-              :result-detail { :result :pass }}))
+  (dispatch-ans { :type :test-result
+                  :fact-context (get-fact-hierarchy)
+                  :result-detail { :result :pass }}))
 
 (def fail-reasons
   #{ :actual-result-did-not-match-expected-value
@@ -48,7 +50,7 @@
   [m]
   (println "Enter: fail")
   (println m)
-  (u/answer *transport* *msg*
+  (dispatch-ans
             { :type :test-result
               :fact 123
               :result-detail (assoc (clojure.set/rename-keys m { :type :reason })
