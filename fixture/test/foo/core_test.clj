@@ -5,7 +5,7 @@
 (facts "about factorial"
        (factorial 0) => 1
        (factorial 1) => 1
-       (factorial 2) => 2
+       (factorial 2) => 3 ;Fake a failure
        (factorial 3) => 6
        (factorial 6) => 720)
 

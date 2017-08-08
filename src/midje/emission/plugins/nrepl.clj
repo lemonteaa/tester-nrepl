@@ -23,7 +23,7 @@
   (dispatch-ans { :type :done }))
 
 (defn get-fact-hierarchy []
-  (map fact/guid nested-facts/*fact-context*))
+  (map meta nested-facts/*fact-context*))
 
 (defn starting-to-check-fact [f]
   (dispatch-ans { :type :status-update :fact-context (get-fact-hierarchy) :status :checking }))
@@ -52,7 +52,7 @@
   (println m)
   (dispatch-ans
             { :type :test-result
-              :fact 123
+              :fact-context (get-fact-hierarchy)
               :result-detail (assoc (clojure.set/rename-keys m { :type :reason })
                                      :result (if (contains? fail-reasons (:type m))
                                                 :fail
